@@ -18,4 +18,6 @@ func main(){
 	fmt.Println("len(s):",(*reflect.StringHeader)(unsafe.Pointer(&s)).Len)
 	fmt.Println("len(s1):",(*reflect.StringHeader)(unsafe.Pointer(&s1)).Len)
 	fmt.Println("len(s2):",(*reflect.StringHeader)(unsafe.Pointer(&s2)).Len)
+	// go 中字符串为静态，如果要修改，需要先转换为可变的切片类型，修改之后在转回字符串类型。
+	// 转换为 []rune 或 []byte
 }
