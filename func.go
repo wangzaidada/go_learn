@@ -46,7 +46,7 @@ func f(x int) *int {
 
 }
 func g() int {
-	var x *int // 数上缺少这一步
+	var x *int // 书上缺少这一步
 	x = new(int)
 	return *x
 }
