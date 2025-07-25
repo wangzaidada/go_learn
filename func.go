@@ -27,7 +27,7 @@ func Sum(a int, more ...int) int {
 }
 
 // 给函数的返回值命名
-func Find(m map[int]int, key int) (value int, ok bool) {
+func Find(m map[int]int, key int) (value int, ok bool) { // 安全的查找一个map的键
 	value, ok = m[key]
 	return // 隐式返回命名返回值 value 和 ok
 }
@@ -41,6 +41,15 @@ func Inc() (v int) {
 	defer func() { v++ }() // () 表示对匿名函数的调用
 	return 42
 }
+func f(x int) *int {
+	return &x
+
+}
+func g() int {
+	var x *int // 数上缺少这一步
+	x = new(int)
+	return *x
+}
 func main() {
 	fmt.Println(Add(1, 2))
 	fmt.Println(add(2, 3))
@@ -51,4 +60,6 @@ func main() {
 	fmt.Println(a)
 	fmt.Println(Find(map[int]int{1: 1212, 2: 12122}, 1))
 	fmt.Println(Find(map[int]int{1: 1212, 2: 12122}, 3))
+	fmt.Println(f(1))
+	fmt.Print(g())
 }
