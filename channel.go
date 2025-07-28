@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	. "fmt"
 )
 
@@ -13,9 +14,23 @@ func aGoroutine() {
 	done <- true
 	close(done)
 }
+func ch() { // 多线程同步（通道方式）
+	done := make(chan int, 10)
+	for i := 0; i < cap(done); i++ {
+		go func() {
+			fmt.Printf("hello.world %d", i)
+			done <- 1
+		}()
+	}
+	for i := 0; i < cap(done); i++ {
+		<-done
+		fmt.Println("ok")
+	}
+}
 
 func main() {
 	go aGoroutine()
 	<-done
 	Println(msg)
+	ch()
 }
