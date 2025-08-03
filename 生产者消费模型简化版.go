@@ -20,7 +20,7 @@ type Config struct {
 func loadConfig() *Config {
 	// 实际应用中，这里可能从文件、数据库或远程服务加载配置
 	// 为了演示，生成一些随机配置值
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())// 随机种子
 	return &Config{
 		ServerName: fmt.Sprintf("server-%d", rand.Intn(100)),
 		MaxRetries: rand.Intn(5) + 1,
@@ -31,11 +31,11 @@ func loadConfig() *Config {
 
 // 模拟请求来源
 func requests() <-chan int {
-	ch := make(chan int)
+	ch := make(chan int) // 创建一个 整型通道
 	go func() {
-		defer close(ch)
+		defer close(ch) // 延迟关闭通道
 		// 持续生成请求
-		for i := 0; i < 50; i++ {
+		for i := 0; i < 50; i++ {// 生产50 个请求
 			ch <- i                            // 发送请求ID
 			time.Sleep(200 * time.Millisecond) // 控制请求频率
 		}
@@ -65,7 +65,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(10)
 	for i := 0; i < 10; i++ {
-		go func(workerID int) {
+		go func(worke rID int) {
 			defer wg.Done()
 			for reqID := range requests() {
 				// 加载当前配置
