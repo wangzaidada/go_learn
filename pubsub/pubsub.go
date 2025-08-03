@@ -14,13 +14,13 @@ type (
 // 发布者对象
 
 type Publisher struct {
-	m           sync.RWMutex
-	buffer      int
-	timeout     time.Duration
+	m           sync.RWMutex  //读写锁
+	buffer      int           // 通道缓存
+	timeout     time.Duration //
 	subscribers map[subscriber]topicFunc
 }
 
-func NewPublisher(publishTimeout time.Duration, buffer int) *Publisher {
+func NewPublisher(publishTimeout time.Duration, buffer int) *Publisher { // 新建发布者 类似面向对象的 init 初始化对象
 	return &Publisher{
 		buffer:      buffer,
 		timeout:     publishTimeout,
@@ -28,11 +28,11 @@ func NewPublisher(publishTimeout time.Duration, buffer int) *Publisher {
 	}
 }
 
-func (p *Publisher) Subscribe() chan interface{} {
+func (p *Publisher) Subscribe() chan interface{} { // 全部订阅
 	return p.SubscribeTopic(nil)
 }
 
-func (p *Publisher) SubscribeTopic(topic topicFunc) chan interface{} {
+func (p *Publisher) SubscribeTopic(topic topicFunc) chan interface{} { //订阅主题
 	ch := make(chan interface{}, p.buffer)
 	p.m.Lock()
 	p.subscribers[ch] = topic
@@ -40,7 +40,7 @@ func (p *Publisher) SubscribeTopic(topic topicFunc) chan interface{} {
 	return ch
 }
 
-func (p *Publisher) Evict(sub chan interface{}) {
+func (p *Publisher) Evict(sub chan interface{}) { // 取消订阅
 	p.m.Lock()
 	defer p.m.Unlock()
 
@@ -48,19 +48,19 @@ func (p *Publisher) Evict(sub chan interface{}) {
 	close(sub)
 }
 
-func (p *Publisher) Publish(v interface{}) {
+func (p *Publisher) Publish(v interface{}) { //发布一个主题
 	p.m.RLock()
 	defer p.m.RUnlock()
 
 	var wg sync.WaitGroup
-	for sub, topic := range p.subscribers {
+	for sub, topic := range p.subscribers { // 循环发送到每一个订阅者
 		wg.Add(1)
 		go p.sendTopic(sub, topic, v, &wg)
 	}
 	wg.Wait()
 }
 
-func (p *Publisher) Close() {
+func (p *Publisher) Close() { // 关闭发布者
 	p.m.Lock()
 	defer p.m.Unlock()
 
@@ -70,7 +70,7 @@ func (p *Publisher) Close() {
 	}
 }
 
-func (p *Publisher) sendTopic(
+func (p *Publisher) sendTopic( // 发布消息
 	sub subscriber, topic topicFunc, v interface{}, wg *sync.WaitGroup,
 ) {
 	defer wg.Done()
@@ -78,7 +78,7 @@ func (p *Publisher) sendTopic(
 		return
 	}
 	select {
-	case sub <- v:
-	case <-time.After(p.timeout):
+	case sub <- v: // 发送消息
+	case <-time.After(p.timeout): // 超时
 	}
 }
