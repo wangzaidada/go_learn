@@ -74,7 +74,7 @@ func (p *Publisher) sendTopic(
 	sub subscriber, topic topicFunc, v interface{}, wg *sync.WaitGroup,
 ) {
 	defer wg.Done()
-	if topic != nil && !topic(v) {
+	if topic != nil && !topic(v) { // 过滤不满足条件的
 		return
 	}
 	select {
